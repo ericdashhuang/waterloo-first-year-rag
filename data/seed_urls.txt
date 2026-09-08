@@ -1,0 +1,102 @@
+# Corpus source list for the Waterloo First-Year RAG project.
+# One public uwaterloo.ca URL per line. Lines starting with # are comments.
+# Regenerate candidates with `python data/discover_urls.py`, then curate by hand.
+
+# --- Co-op: overview & getting started ---
+https://uwaterloo.ca/co-operative-education/
+https://uwaterloo.ca/co-operative-education/about-co-op
+https://uwaterloo.ca/co-operative-education/about-co-op/our-mission-vision
+https://uwaterloo.ca/co-operative-education/about-co-op/co-op-earnings
+https://uwaterloo.ca/co-operative-education/about-co-op/employment-statistics
+https://uwaterloo.ca/co-operative-education/about-co-op/hear-waterloo-co-op-students
+https://uwaterloo.ca/co-operative-education/future-co-op-students
+https://uwaterloo.ca/co-operative-education/important-dates
+https://uwaterloo.ca/co-operative-education/your-co-op-fee
+https://uwaterloo.ca/co-operative-education/international-co-op-students
+https://uwaterloo.ca/co-operative-education/parents-and-supporters
+
+# --- Co-op: rules & requirements ---
+https://uwaterloo.ca/co-operative-education/rules
+https://uwaterloo.ca/co-operative-education/rules/requirements
+https://uwaterloo.ca/co-operative-education/rules/job-withdrawals
+https://uwaterloo.ca/co-operative-education/rules/petitions
+
+# --- Co-op: finding a job ---
+https://uwaterloo.ca/co-operative-education/find-job
+https://uwaterloo.ca/co-operative-education/find-job/fcs
+https://uwaterloo.ca/co-operative-education/find-job/fcs/interviews
+https://uwaterloo.ca/co-operative-education/find-job/fcs/rank-match
+https://uwaterloo.ca/co-operative-education/find-job/external
+https://uwaterloo.ca/co-operative-education/find-job/external/aoj
+https://uwaterloo.ca/co-operative-education/find-job/external/funded
+https://uwaterloo.ca/co-operative-education/find-job/alternative
+https://uwaterloo.ca/co-operative-education/find-job/returning
+https://uwaterloo.ca/co-operative-education/find-job/secured
+https://uwaterloo.ca/co-operative-education/find-job/scam-protection
+https://uwaterloo.ca/co-operative-education/waterlooworks-student-help
+
+# --- Co-op: during the work term ---
+https://uwaterloo.ca/co-operative-education/work-term
+https://uwaterloo.ca/co-operative-education/work-term/overview
+https://uwaterloo.ca/co-operative-education/work-term/safety
+https://uwaterloo.ca/co-operative-education/work-term/consultations
+https://uwaterloo.ca/co-operative-education/work-term/performance-evaluation
+https://uwaterloo.ca/co-operative-education/work-term/pd-reports
+https://uwaterloo.ca/co-operative-education/resources/sequence-change
+
+# --- Co-op: support resources ---
+https://uwaterloo.ca/co-operative-education/resources
+https://uwaterloo.ca/co-operative-education/resources/supports
+https://uwaterloo.ca/co-operative-education/resources/supports/accessibility
+https://uwaterloo.ca/co-operative-education/resources/supports/career
+https://uwaterloo.ca/co-operative-education/resources/supports/community
+https://uwaterloo.ca/co-operative-education/resources/supports/financial
+https://uwaterloo.ca/co-operative-education/resources/supports/housing
+https://uwaterloo.ca/co-operative-education/resources/supports/mental-health
+https://uwaterloo.ca/co-operative-education/resources/supports/harassment-discrimination
+https://uwaterloo.ca/co-operative-education/resources/events
+https://uwaterloo.ca/co-operative-education/resources/events/career-workshops
+https://uwaterloo.ca/co-operative-education/resources/events/employer-information-sessions
+https://uwaterloo.ca/co-operative-education/resources/events/p4e-job-fair
+
+# --- Co-op: work abroad ---
+https://uwaterloo.ca/co-operative-education/work-abroad
+https://uwaterloo.ca/co-operative-education/work-abroad/why-work-abroad
+https://uwaterloo.ca/co-operative-education/work-abroad/why-work-abroad/student-stories
+https://uwaterloo.ca/co-operative-education/work-abroad/find-jobs-abroad
+https://uwaterloo.ca/co-operative-education/work-abroad/find-jobs-abroad/financial-support
+https://uwaterloo.ca/co-operative-education/work-abroad/before-you-go
+https://uwaterloo.ca/co-operative-education/work-abroad/before-you-go/co-op-requirements
+https://uwaterloo.ca/co-operative-education/work-abroad/before-you-go/travel-essentials
+https://uwaterloo.ca/co-operative-education/work-abroad/before-you-go/health-coverage
+https://uwaterloo.ca/co-operative-education/work-abroad/before-you-go/emergency-planning
+https://uwaterloo.ca/co-operative-education/work-abroad/visas-and-permits
+
+# --- A couple of real student stories, for texture ---
+https://uwaterloo.ca/co-operative-education/blog/transforming-lives-and-discovering-your-passion-co-op
+https://uwaterloo.ca/co-operative-education/blog/every-aspiring-psychologists-dream-role
+
+# --- Housing / residences ---
+https://uwaterloo.ca/housing/
+https://uwaterloo.ca/housing/residences
+
+# --- Orientation ---
+https://uwaterloo.ca/orientation/
+https://uwaterloo.ca/orientation/international-students
+
+# --- International students ---
+https://uwaterloo.ca/international-students
+
+# --- Campus wellness ---
+https://uwaterloo.ca/campus-wellness/
+https://uwaterloo.ca/campus-wellness-resources/about-student-health-and-well-being
+
+# --- Student success office ---
+https://uwaterloo.ca/student-success/
+
+# --- Registrar ---
+https://uwaterloo.ca/registrar/
+https://uwaterloo.ca/registrar/admissions
+https://uwaterloo.ca/registrar/enrolment-services-and-academic-policy
+https://uwaterloo.ca/registrar/student-awards-and-financial-aid
+https://uwaterloo.ca/registrar/student-services

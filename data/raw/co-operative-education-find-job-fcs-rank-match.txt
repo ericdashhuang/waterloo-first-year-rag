@@ -1,0 +1,65 @@
+URL: https://uwaterloo.ca/co-operative-education/find-job/fcs/rank-match
+TITLE: Rank/Match process
+
+Rank/Match process
+After interviewing for jobs on the Full-Cycle Service (FCS) job board, you'll receive employer rankings through the Rank/Match process.
+How it works:
+Employers submit their rankings first. This ensures you have as much information as possible to make an informed decision.
+Once employer rankings are released, you'll be able to submit your rankings in WaterlooWorks.
+After the ranking period closes, WaterlooWorks uses a matching algorithm to pair students and employers.
+The algorithm looks for the lowest sum of both student and employer rankings.
+For example:
+Employer ranking (1) + student ranking (1) = 2
+Employer ranking (2) + student ranking (1) = 3
+Employer ranking (2) + student ranking (2) = 4
+In this example, the match with a combined score of 2 would be considered first because it represents the lowest sum. If either the student or the job is no longer available, the algorithm moves to the next lowest score (3), and then the next (4) if needed. This process continues until all possible matches have been completed.
+If you're matched to a Full-Cycle Service job, you're considered employed for that work term and must honour the match in accordance with co-op requirements . If you don't receive a ranking, don't be discouraged. Not every interview results in a ranking, and many students secure great opportunities through later hiring cycles and continued job searching.
+Need help deciding how to rank your jobs? Connect with your Co-op Advisor . Advisors set aside time during the ranking period to answer questions and discuss ranking strategies. No appointment necessary, you can contact your Co-op Advisor using their contact information on WaterlooWorks .
+Ranking jobs in WaterlooWorks
+When rankings are released, you'll see one of the following statuses beside each job you've interviewed for.
+The employer ranked you somewhere between 2 and 10. You could be matched with the job.
+Tip: You can rank multiple jobs as "1" to increase your chances of being hired. You can also rank jobs from 2-10. If you rank the job a 10, it’s still possible that you’ll be matched.
+Submitting "Not Interested" rankings
+You can submit up to ten (10) "Not Interested" rankings per term to guarantee that you will not be matched with a job and/or prioritize other jobs of interest. To use this option, select "Not Interested" on your ranking form and provide a reason before hitting "Save Rankings."
+Important ranking information
+Submit all of your rankings- You must submit rankings for every eligible job on your ranking form before the deadline. If you don't submit rankings, WaterlooWorks will automatically assign a ranking of 10 to all jobs, which could still result in a match.
+Save your rankings- After finalizing your rankings, select "Save Rankings" to submit them so they’ve saved in our system.
+Don’t discuss rankings with employers  Employers- should not ask about your rankings, and you don't need to share your ranking strategy. If an employer contacts you about rankings or offers you a job outside the WaterlooWorks process, contact your Co-op Advisor right away. All job offers and matches for jobs posted on the Full-Cycle Service job board must follow the process to keep things fair for both students and employers.
+Understand your commitment- When you are matched with a job, you are expected to honour this match as outlined by the co-op rules . Even if you rank a job as 10, you could still be matched with it. If you would not accept a job, consider using a Not Interested ranking instead.
+WaterlooWorks job matching
+After the ranking deadline, our rank/match system will match you with a job. Check the Important Dates calendar to see when match results are available on WaterlooWorks . When the match results come out, the following scenarios may occur.
+You've been matched
+You'll receive a WaterlooWorks message confirming your match and outlining next steps.
+You can now disregard any upcoming FCS interviews. We’ll take care of removing these for you and will try to find alternate candidates to take your place. Remember that you’re obligated to honour any matches.
+Learn what to do after you’ve secured employment .
+You've been matched with an international job: Follow the steps listed on our work abroad co-op requirements page to make sure you’re all set to go. If you're working outside Canada and the U.S., you will temporarily be assigned to an International Co-op Advisor.
+Follow the steps listed on our work abroad co-op requirements page to make sure you’re all set to go.
+If you're working outside Canada and the U.S., you will temporarily be assigned to an International Co-op Advisor.
+You've been matched with an independent contractor job : You’ll need to complete the waiver form on WaterlooWorks > Submit a form > Work Term Admin > Independent Contractor Employment Waiver (5023).
+You’ll need to complete the waiver form on WaterlooWorks > Submit a form > Work Term Admin > Independent Contractor Employment Waiver (5023).
+You haven't been matched
+Don't worry if you haven't been matched yet. New opportunities will continue to be posted on WaterlooWorks, and you can also explore jobs on the Employer-Student Direct board or through your own job search.
+If your scheduled work term has already started, you can continue looking for work until the final work term start date listed on the Important Dates calendar .
+If you need support with your job search, connect with your Co-op Advisor and take advantage of the resources available to help you succeed.
+Frequently asked questions
+Why can't I see my exact employer ranking?
+Employer rankings are generally treated as confidential hiring information and are not typically shared with candidates during recruitment processes. Showing ranking numbers could also create confusion because employers can assign the same ranking to multiple candidates. For example, an employer with several openings may rank many students as a 2 or 3, making it impossible to accurately predict the final outcome. Instead of focusing on ranking numbers, you should rank jobs based on your genuine preferences.
+Why is the ‘minimum sums’ algorithm used instead of a ‘deferred acceptance’ algorithm?
+In 2025, Co-operative and Experiential Education (CEE) worked with a Faculty of Math professor to independently review the WaterlooWorks matching process. The review examined several matching algorithms and analyzed six years of ranking data.
+The review found that the minimum sums and deferred acceptance (also known as stable marriage) algorithms produced very similar results for students and employers. In most cases, the difference was only one or two matches, and there was no meaningful difference in the overall quality of student outcomes.
+While deferred acceptance can reduce opportunities for participants to "game" the system, this benefit depends on a less transparent process. The review also found that changing algorithms would require significant system updates, testing and communication for both students and employers.
+Based on these findings, CEE determined that the benefits of switching algorithms would be minimal and will continue using the minimum sums algorithm.
+What happens in case of a tie?
+If two possible matches have the same combined ranking score, WaterlooWorks uses a random tiebreaker to determine which match is considered first. The tiebreaker does not favour either students or employers.
+How often do students and employers get their top choice?
+The rank/match process results in many students and employers being matched with one of their top choices:
+About 70% of all matches are student #1 and employer #1 matches.
+About 94% of students are matched with a job they ranked #1.
+More than 70% of employers receive their top-choice candidate.
+More than 90% of employers receive either their first- or second-choice candidate.
+Can employers see my rankings or comments?
+No. Your individual rankings and comments are not shared with employers. In some cases, Co-operative and Experiential Education staff may share anonymous, summarized feedback with employers to help them improve their recruiting practices.
+Employers may only be able to see that you selected "Not Interested" if their job remains unfilled and you are not employed after the match.
+How can my Co-op Advisor support me during the ranking period?
+Co-op Advisors set aside time during the ranking period to support students. They can answer questions, help you think through your options and discuss factors that may affect your ranking decisions. No appointment necessary, you can contact your Co-op Advisor using their contact information on WaterlooWorks.
+Note: Co-op Advisors cannot provide employer ranking numbers.
