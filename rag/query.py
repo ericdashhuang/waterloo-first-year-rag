@@ -53,7 +53,7 @@ def generate_answer(question: str, chunks) -> str:
     client = anthropic.Anthropic()
     context = format_context(chunks)
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-sonnet-5",
         max_tokens=600,
         system=SYSTEM_PROMPT,
         messages=[{

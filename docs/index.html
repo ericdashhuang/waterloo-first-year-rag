@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Waterloo First-Year RAG</title>
+  <meta name="description" content="Ask questions about first year at Waterloo (co-op, housing, orientation) - answered by a retrieval-augmented pipeline running entirely in your browser." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>Waterloo First-Year RAG</h1>
+    <p class="subtitle">
+      Ask a question about first year at Waterloo (co-op, housing, orientation, wellness).
+      Retrieval runs entirely in your browser against ~70 real uwaterloo.ca pages -
+      no server, nothing sent anywhere until you optionally ask an LLM to generate an answer.
+      <a href="https://github.com/ericdashhuang/waterloo-first-year-rag" target="_blank" rel="noopener">Source + how it works &rarr;</a>
+    </p>
+
+    <div class="card">
+      <div id="status" class="status-row">
+        <span class="spinner"></span>
+        <span id="statusText">Loading embedding model...</span>
+      </div>
+      <progress id="progressBar" hidden></progress>
+    </div>
+
+    <div class="card">
+      <form id="qform" class="qform">
+        <input type="text" id="question" placeholder="e.g. How many co-op work terms do I need?" autocomplete="off" disabled />
+        <button type="submit" id="askBtn" disabled>Ask</button>
+      </form>
+    </div>
+
+    <div class="card" id="resultsCard" hidden>
+      <div id="chunks"></div>
+    </div>
+
+    <div class="card" id="genCard" hidden>
+      <details id="genDetails">
+        <summary>Generate a written answer (uses your own API key)</summary>
+        <p class="hint">
+          Your key is used only for a direct request from your browser to the provider you pick below.
+          It is never sent to any server this site controls, and is not saved anywhere unless you check the box below.
+        </p>
+        <div class="field">
+          <label for="provider">Provider</label>
+          <select id="provider">
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="model">Model</label>
+          <input type="text" id="model" value="claude-sonnet-5" />
+        </div>
+        <div class="field">
+          <label for="apiKey">API key</label>
+          <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="rememberKey" /> Remember key in this browser only (localStorage)</label>
+        </div>
+        <button type="button" id="generateBtn">Generate answer</button>
+        <div id="genError" class="error" hidden></div>
+        <div id="answer" class="answer"></div>
+      </details>
+    </div>
+
+    <footer>
+      Built as a resume/learning project - raw Python RAG pipeline + browser-native retrieval demo.
+      <br />
+      <a href="https://github.com/ericdashhuang/waterloo-first-year-rag" target="_blank" rel="noopener">github.com/ericdashhuang/waterloo-first-year-rag</a>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

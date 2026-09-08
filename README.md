@@ -30,7 +30,8 @@ rag/
   chunking.py            splits page text into overlapping chunks
   build_index.py         embeds chunks and builds the Chroma index
   query.py                retrieval + generation CLI
-web/                     static client-side demo (see below)
+  export_chunks.py       exports chunk text (no vectors) for the web demo
+docs/                    static client-side demo, served by GitHub Pages (see below)
 ```
 
 ## Running it locally
@@ -56,9 +57,12 @@ Without a key, `query.py` still prints the retrieved chunks so you can inspect r
 
 ## Live demo
 
-A static, browser-only version of this lives on GitHub Pages: see `web/`.
+**[ericdashhuang.github.io/waterloo-first-year-rag](https://ericdashhuang.github.io/waterloo-first-year-rag/)**
+
+A static, browser-only version of this lives on GitHub Pages: see `docs/`.
 It computes embeddings client-side (via [transformers.js](https://huggingface.co/docs/transformers.js)), so there's no backend server and no shared API key that a stranger could drain.
-To ask a question that generates an answer (not just retrieves chunks), you paste your own Anthropic or OpenAI API key into the page — it's used directly from your browser to call the provider and is never sent anywhere else or stored.
+Retrieval works immediately with no setup.
+To also get a generated written answer (not just the retrieved chunks), you paste your own Anthropic or OpenAI API key into the page — it's used directly from your browser to call the provider and is never sent anywhere else or stored, unless you explicitly opt in to remembering it in that browser's local storage.
 
 ## Design decisions worth knowing about
 
