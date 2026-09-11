@@ -147,11 +147,11 @@ qform.addEventListener("submit", async (e) => {
 
 const DEFAULT_MODELS = {
   anthropic: "claude-sonnet-5",
-  groq: "llama-3.3-70b-versatile",
+  groq: "openai/gpt-oss-120b",
 };
 const MODEL_PLACEHOLDERS = {
   openai: "e.g. gpt-4o-mini",
-  groq: "e.g. llama-3.3-70b-versatile",
+  groq: "e.g. openai/gpt-oss-120b",
 };
 
 providerSelect.addEventListener("change", () => {
