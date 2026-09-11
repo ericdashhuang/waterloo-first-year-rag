@@ -14,20 +14,21 @@ const progressBar = document.getElementById("progressBar");
 const qform = document.getElementById("qform");
 const questionInput = document.getElementById("question");
 const askBtn = document.getElementById("askBtn");
-const resultsCard = document.getElementById("resultsCard");
-const chunksEl = document.getElementById("chunks");
-const genCard = document.getElementById("genCard");
+const settingsCard = document.getElementById("settingsCard");
+const conversationEl = document.getElementById("conversation");
 const providerSelect = document.getElementById("provider");
 const modelInput = document.getElementById("model");
 const apiKeyInput = document.getElementById("apiKey");
 const rememberKeyInput = document.getElementById("rememberKey");
-const generateBtn = document.getElementById("generateBtn");
-const genError = document.getElementById("genError");
-const answerEl = document.getElementById("answer");
 
 let extractor = null;
 let chunks = [];
 let vectors = []; // parallel array of Float32Array, normalized
+
+// Each turn: { question, chunks: [{chunk, score}], answer: string|null }
+// Kept around so a later question's retrieval and a later answer's prompt
+// can both refer back to what was asked and answered before it.
+let turns = [];
 
 function setStatus(text) {
   statusText.textContent = text;
@@ -108,58 +109,6 @@ async function init() {
   }
 }
 
-function renderChunks(results) {
-  chunksEl.innerHTML = "";
-  for (const { chunk, score } of results) {
-    const div = document.createElement("div");
-    div.className = "chunk";
-    div.innerHTML = `
-      <a class="chunk-source" href="${chunk.source_url}" target="_blank" rel="noopener">${chunk.source_title || chunk.source_url}</a>
-      <span class="hint"> (similarity ${score.toFixed(2)})</span>
-      <div class="chunk-text"></div>
-    `;
-    div.querySelector(".chunk-text").textContent = chunk.text;
-    chunksEl.appendChild(div);
-  }
-  resultsCard.hidden = false;
-  genCard.hidden = false;
-  answerEl.textContent = "";
-  genError.hidden = true;
-}
-
-let lastResults = [];
-
-qform.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const question = questionInput.value.trim();
-  if (!question || vectors.length === 0) return;
-
-  askBtn.disabled = true;
-  askBtn.textContent = "Searching...";
-  const qVec = await embed(question);
-  const scored = vectors.map((v, i) => ({ chunk: chunks[i], score: dot(qVec, v) }));
-  scored.sort((a, b) => b.score - a.score);
-  lastResults = scored.slice(0, TOP_K);
-  renderChunks(lastResults);
-  askBtn.disabled = false;
-  askBtn.textContent = "Ask";
-});
-
-const DEFAULT_MODELS = {
-  anthropic: "claude-sonnet-5",
-  groq: "openai/gpt-oss-120b",
-};
-
-function syncModelField() {
-  modelInput.value = DEFAULT_MODELS[providerSelect.value] || "";
-}
-
-providerSelect.addEventListener("change", syncModelField);
-// Some browsers restore a <select>'s value on reload/back-forward without
-// firing "change", which would leave the model field out of sync - so also
-// sync once up front against whatever the provider field actually shows.
-syncModelField();
-
 function buildSystemPrompt() {
   return "You are a helpful assistant answering questions about being a first-year student at the University of Waterloo, based only on the provided context from uwaterloo.ca. If the context doesn't contain the answer, say so plainly instead of guessing. Write in plain prose. Do not use any citation markup like [1] or 【source】 - instead name the source title(s) in a sentence at the end of your answer.";
 }
@@ -180,13 +129,23 @@ function formatAnswer(raw) {
   return paragraphs.join("");
 }
 
-function buildContext() {
-  return lastResults
+function buildContext(turnChunks) {
+  return turnChunks
     .map(({ chunk }, i) => `[${i + 1}] Source: ${chunk.source_title} (${chunk.source_url})\n${chunk.text}`)
     .join("\n\n");
 }
 
-async function callAnthropic(apiKey, model, question) {
+// Prior turns that got an answer, formatted as plain Q/A text so the LLM can
+// refer back to what it already told you this conversation.
+function buildHistoryText(uptoTurnIndex) {
+  return turns
+    .slice(0, uptoTurnIndex)
+    .filter((t) => t.answer)
+    .map((t) => `Q: ${t.question}\nA: ${t.answer}`)
+    .join("\n\n");
+}
+
+async function callAnthropic(apiKey, model, userContent) {
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -199,7 +158,7 @@ async function callAnthropic(apiKey, model, question) {
       model,
       max_tokens: 600,
       system: buildSystemPrompt(),
-      messages: [{ role: "user", content: `Context:\n\n${buildContext()}\n\nQuestion: ${question}` }],
+      messages: [{ role: "user", content: userContent }],
     }),
   });
   if (!resp.ok) throw new Error(`Anthropic API error ${resp.status}: ${await resp.text()}`);
@@ -207,7 +166,7 @@ async function callAnthropic(apiKey, model, question) {
   return data.content[0].text;
 }
 
-async function callGroq(apiKey, model, question) {
+async function callGroq(apiKey, model, userContent) {
   const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -218,7 +177,7 @@ async function callGroq(apiKey, model, question) {
       model,
       messages: [
         { role: "system", content: buildSystemPrompt() },
-        { role: "user", content: `Context:\n\n${buildContext()}\n\nQuestion: ${question}` },
+        { role: "user", content: userContent },
       ],
     }),
   });
@@ -232,38 +191,135 @@ const PROVIDER_CALLS = {
   groq: callGroq,
 };
 
-generateBtn.addEventListener("click", async () => {
-  const apiKey = apiKeyInput.value.trim();
-  const model = modelInput.value.trim();
+const DEFAULT_MODELS = {
+  anthropic: "claude-sonnet-5",
+  groq: "openai/gpt-oss-120b",
+};
+
+function syncModelField() {
+  modelInput.value = DEFAULT_MODELS[providerSelect.value] || "";
+}
+
+providerSelect.addEventListener("change", syncModelField);
+// Some browsers restore a <select>'s value on reload/back-forward without
+// firing "change", which would leave the model field out of sync - so also
+// sync once up front against whatever the provider field actually shows.
+syncModelField();
+
+function wireGenerateButton(turnIndex, question, turnChunks, generateBtn, errorEl, answerEl) {
+  generateBtn.addEventListener("click", async () => {
+    const apiKey = apiKeyInput.value.trim();
+    const model = modelInput.value.trim();
+    errorEl.hidden = true;
+    answerEl.textContent = "";
+
+    if (!apiKey) {
+      errorEl.textContent = "Enter an API key first, then click Generate answer.";
+      errorEl.hidden = false;
+      return;
+    }
+
+    if (rememberKeyInput.checked) {
+      try { localStorage.setItem("wfyr_api_key", apiKey); } catch { /* ignore */ }
+    } else {
+      try { localStorage.removeItem("wfyr_api_key"); } catch { /* ignore */ }
+    }
+
+    generateBtn.disabled = true;
+    generateBtn.textContent = "Generating...";
+    try {
+      const history = buildHistoryText(turnIndex);
+      const context = buildContext(turnChunks);
+      const userContent = `${history ? `Conversation so far:\n${history}\n\n` : ""}Context:\n\n${context}\n\nQuestion: ${question}`;
+      const call = PROVIDER_CALLS[providerSelect.value];
+      const answer = await call(apiKey, model, userContent);
+      turns[turnIndex].answer = answer;
+      answerEl.innerHTML = formatAnswer(answer);
+    } catch (err) {
+      errorEl.textContent = `${err.message} (if this looks like a CORS/network error, the provider may not allow direct browser calls -- try the other provider, or run rag/query.py locally instead).`;
+      errorEl.hidden = false;
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = "Generate answer";
+    }
+  });
+}
+
+function renderTurn(question, turnChunks, turnIndex) {
+  const card = document.createElement("div");
+  card.className = "card turn";
+
+  const qEl = document.createElement("div");
+  qEl.className = "turn-question";
+  qEl.textContent = question;
+  card.appendChild(qEl);
+
+  const details = document.createElement("details");
+  details.className = "turn-chunks";
+  const summary = document.createElement("summary");
+  summary.textContent = `${turnChunks.length} retrieved passages`;
+  details.appendChild(summary);
+
+  for (const { chunk, score } of turnChunks) {
+    const div = document.createElement("div");
+    div.className = "chunk";
+    div.innerHTML = `
+      <a class="chunk-source" href="${chunk.source_url}" target="_blank" rel="noopener">${chunk.source_title || chunk.source_url}</a>
+      <span class="hint"> (similarity ${score.toFixed(2)})</span>
+      <div class="chunk-text"></div>
+    `;
+    div.querySelector(".chunk-text").textContent = chunk.text;
+    details.appendChild(div);
+  }
+  card.appendChild(details);
+
+  const generateBtn = document.createElement("button");
+  generateBtn.type = "button";
+  generateBtn.textContent = "Generate answer";
+  card.appendChild(generateBtn);
+
+  const errorEl = document.createElement("div");
+  errorEl.className = "error";
+  errorEl.hidden = true;
+  card.appendChild(errorEl);
+
+  const answerEl = document.createElement("div");
+  answerEl.className = "answer";
+  card.appendChild(answerEl);
+
+  conversationEl.appendChild(card);
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  wireGenerateButton(turnIndex, question, turnChunks, generateBtn, errorEl, answerEl);
+}
+
+qform.addEventListener("submit", async (e) => {
+  e.preventDefault();
   const question = questionInput.value.trim();
-  genError.hidden = true;
-  answerEl.textContent = "";
+  if (!question || vectors.length === 0) return;
 
-  if (!apiKey || !question || lastResults.length === 0) {
-    genError.textContent = "Ask a question first, then enter an API key.";
-    genError.hidden = false;
-    return;
-  }
+  askBtn.disabled = true;
+  askBtn.textContent = "Searching...";
 
-  if (rememberKeyInput.checked) {
-    try { localStorage.setItem("wfyr_api_key", apiKey); } catch { /* ignore */ }
-  } else {
-    try { localStorage.removeItem("wfyr_api_key"); } catch { /* ignore */ }
-  }
+  const turnIndex = turns.length;
+  // Prepend the previous question (not its answer - keeps the embedding
+  // input short) so a short follow-up like "what about abroad?" retrieves
+  // against the topic it's actually continuing, not just the fragment.
+  const retrievalText = turnIndex === 0 ? question : `${turns[turnIndex - 1].question}\n${question}`;
 
-  generateBtn.disabled = true;
-  generateBtn.textContent = "Generating...";
-  try {
-    const call = PROVIDER_CALLS[providerSelect.value];
-    const answer = await call(apiKey, model, question);
-    answerEl.innerHTML = formatAnswer(answer);
-  } catch (err) {
-    genError.textContent = `${err.message} (if this looks like a CORS/network error, the provider may not allow direct browser calls -- try the other provider, or run rag/query.py locally instead).`;
-    genError.hidden = false;
-  } finally {
-    generateBtn.disabled = false;
-    generateBtn.textContent = "Generate answer";
-  }
+  const qVec = await embed(retrievalText);
+  const scored = vectors.map((v, i) => ({ chunk: chunks[i], score: dot(qVec, v) }));
+  scored.sort((a, b) => b.score - a.score);
+  const topResults = scored.slice(0, TOP_K);
+
+  renderTurn(question, topResults, turnIndex);
+  turns.push({ question, chunks: topResults, answer: null });
+
+  settingsCard.hidden = false;
+  questionInput.value = "";
+  questionInput.focus();
+  askBtn.disabled = false;
+  askBtn.textContent = "Ask";
 });
 
 init().catch((err) => {
