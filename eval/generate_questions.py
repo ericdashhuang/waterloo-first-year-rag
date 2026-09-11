@@ -14,6 +14,7 @@ Usage: python eval/generate_questions.py
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 import requests
@@ -50,18 +51,27 @@ def ask_anthropic(prompt: str) -> str:
     return message.content[0].text.strip()
 
 
-def ask_groq(prompt: str) -> str:
-    resp = requests.post(
-        "https://api.groq.com/openai/v1/chat/completions",
-        headers={"authorization": f"Bearer {os.environ['GROQ_API_KEY']}"},
-        json={
-            "model": "openai/gpt-oss-120b",
-            "messages": [{"role": "user", "content": prompt}],
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"].strip()
+def ask_groq(prompt: str, max_retries: int = 5) -> str:
+    for attempt in range(max_retries):
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"authorization": f"Bearer {os.environ['GROQ_API_KEY']}"},
+            json={
+                "model": "openai/gpt-oss-120b",
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=30,
+        )
+        if resp.status_code == 429 and attempt < max_retries - 1:
+            # Free tier throttles harder than you'd expect - back off and retry
+            # instead of losing the whole run. Respect Retry-After if Groq sends one.
+            wait = float(resp.headers.get("retry-after", 2 ** attempt))
+            print(f"    Rate limited, waiting {wait:.0f}s before retrying...", file=sys.stderr)
+            time.sleep(wait)
+            continue
+        resp.raise_for_status()
+        return resp.json()["choices"][0]["message"]["content"].strip()
+    raise SystemExit("Groq API kept rate-limiting after retries -- wait a bit and re-run (already-generated questions are saved, so it'll resume).")
 
 
 def ask(title: str, body: str) -> str:
@@ -79,14 +89,25 @@ def main():
     if not raw_files:
         raise SystemExit(f"No files found in {RAW_DIR} -- run data/ingest.py first.")
 
-    questions = []
+    # Resume support: if questions.json already has entries (e.g. a previous
+    # run got rate-limited partway through), skip pages already done instead
+    # of re-spending API calls and overwriting good results.
+    questions = json.loads(OUT_PATH.read_text()) if OUT_PATH.exists() else []
+    done_urls = {q["source_url"] for q in questions}
+    if done_urls:
+        print(f"Resuming - {len(done_urls)} questions already generated.")
+
     for i, path in enumerate(raw_files, 1):
         url, title, body = parse_raw_file(path.read_text())
+        if url in done_urls:
+            continue
         question = ask(title, body)
         questions.append({"question": question, "source_url": url, "source_title": title})
+        # Save after every question, not just at the end, so a crash or
+        # rate-limit mid-run only costs the one in-flight request.
+        OUT_PATH.write_text(json.dumps(questions, indent=2))
         print(f"  [{i}/{len(raw_files)}] {title}: {question}")
 
-    OUT_PATH.write_text(json.dumps(questions, indent=2))
     print(f"\nWrote {len(questions)} questions to {OUT_PATH}")
 
 
