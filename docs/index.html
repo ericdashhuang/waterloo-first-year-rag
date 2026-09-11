@@ -24,7 +24,7 @@
       <h1>GooseGuide</h1>
     </div>
     <p class="subtitle">
-      Ask a question about first year at Waterloo (co-op, housing, orientation, wellness).
+      Ask a question about first year at Waterloo (co-op, housing, orientation, wellness), then keep asking follow-ups.
       Retrieval runs entirely in your browser against 73 real uwaterloo.ca pages. We also recommend following the instructions below to use an llm to generate the answer!
       <a href="https://github.com/ericdashhuang/gooseguide" target="_blank" rel="noopener">Source + how it works &rarr;</a>
     </p>
@@ -44,12 +44,13 @@
       </form>
     </div>
 
-    <div class="card" id="genCard" hidden>
+    <div class="card" id="settingsCard" hidden>
       <details id="genDetails">
-        <summary>Generate a written answer (uses your own API key)</summary>
+        <summary>Answer settings (uses your own API key)</summary>
         <p class="hint">
           Your key is used only for a direct request from your browser to the provider you pick below.
           It is never sent to any server this site controls, and is not saved anywhere unless you check the box below.
+          Applies to every "Generate answer" button below - set it once.
         </p>
         <div class="field">
           <label for="provider">Provider</label>
@@ -70,15 +71,10 @@
         <div class="field">
           <label><input type="checkbox" id="rememberKey" /> Remember key in this browser only (localStorage)</label>
         </div>
-        <button type="button" id="generateBtn">Generate answer</button>
-        <div id="genError" class="error" hidden></div>
-        <div id="answer" class="answer"></div>
       </details>
     </div>
 
-    <div class="card" id="resultsCard" hidden>
-      <div id="chunks"></div>
-    </div>
+    <div id="conversation"></div>
 
     <footer>
       <a href="https://github.com/ericdashhuang/gooseguide" target="_blank" rel="noopener">github.com/ericdashhuang/gooseguide</a>

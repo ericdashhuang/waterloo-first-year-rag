@@ -15,6 +15,8 @@ This project fixes that by retrieving real content from uwaterloo.ca before gene
 3. **Embed + index** (`rag/build_index.py`) — converts every chunk into a vector using a local embedding model (`all-MiniLM-L6-v2`, bundled with Chroma, runs on CPU, no API key needed) and stores it in a persistent [Chroma](https://www.trychroma.com/) vector database.
 4. **Retrieve + generate** (`rag/query.py`) — embeds the question the same way, finds the most similar chunks by vector search, and passes them to an LLM as context so it can answer from real source material and cite where the answer came from.
 
+The live demo (see below) additionally supports follow-up questions: a short follow-up like "what about abroad?" gets the previous question prepended before it's embedded for retrieval, so retrieval has enough context to find the right page instead of searching on the fragment alone.
+
 No LangChain, no LlamaIndex — every step above is under 100 lines of plain Python, on purpose.
 The goal was to actually understand what a RAG pipeline does, not to call a framework method and trust that it works.
 
@@ -31,7 +33,11 @@ rag/
   build_index.py         embeds chunks and builds the Chroma index
   query.py                retrieval + generation CLI
   export_chunks.py       exports chunk text (no vectors) for the web demo
+eval/
+  generate_questions.py  LLM-generates one ground-truth question per source page
+  run_eval.py             measures retrieval recall against those questions
 docs/                    static client-side demo, served by GitHub Pages (see below)
+.github/workflows/       weekly corpus-refresh automation (see below)
 ```
 
 ## Running it locally
@@ -64,6 +70,25 @@ It computes embeddings client-side (via [transformers.js](https://huggingface.co
 Retrieval works immediately with no setup.
 To also get a generated written answer (not just the retrieved chunks), you paste your own Anthropic or Groq API key into the page — Groq has a free tier — and it's used directly from your browser to call the provider, never sent anywhere else or stored, unless you explicitly opt in to remembering it in that browser's local storage.
 
+## Measuring retrieval accuracy
+
+Instead of eyeballing a few questions by hand, `eval/` turns "does retrieval work" into a number:
+
+```bash
+# 1. Generate one ground-truth question per source page (needs ANTHROPIC_API_KEY or GROQ_API_KEY)
+python eval/generate_questions.py
+
+# 2. Check what fraction of them retrieve the right source page
+python rag/build_index.py   # if you haven't already
+python eval/run_eval.py
+```
+
+`run_eval.py` reports recall@5 (did the correct source page show up in the top 5 retrieved chunks) and lists which questions missed, so a regression in `rag/chunking.py` or a change to `TOP_K` shows up as a number going down instead of going unnoticed.
+
+## Keeping the corpus fresh
+
+uwaterloo.ca is a real site that changes — co-op requirements get updated, dates change year to year. `.github/workflows/refresh-corpus.yml` re-runs the ingest pipeline weekly and opens a PR if any of the 73 pages actually changed, so stale content gets caught automatically instead of silently going unnoticed. It never auto-merges — a human reviews the diff first, same as every other change to this repo.
+
 ## Design decisions worth knowing about
 
 - **Local embedding model, not an API.** Embeddings run through `onnxruntime` on CPU. This keeps the pipeline free to run and testable without any credentials, and it's genuinely fast enough at this corpus size (~400 chunks).
@@ -75,4 +100,4 @@ To also get a generated written answer (not just the retrieved chunks), you past
 
 - Add a re-ranking step after retrieval to improve answer quality on ambiguous questions.
 - Expand the corpus with more sections (academic advising, clubs, transit).
-- Add a small evaluation set of question/answer pairs to measure retrieval accuracy instead of eyeballing it.
+- Add a test suite (unit tests for chunking, a browser smoke test for the live demo).

@@ -1,0 +1,46 @@
+name: Refresh corpus
+
+# Keeps GooseGuide's corpus from silently going stale as uwaterloo.ca pages
+# change over time. Re-runs the ingest pipeline weekly and, if anything
+# actually changed, opens a PR instead of touching main directly -- scraped
+# content gets a human glance before it goes live, same as every other
+# change to this repo.
+
+on:
+  schedule:
+    - cron: "0 6 * * 0" # every Sunday at 06:00 UTC
+  workflow_dispatch: {} # allow a manual run from the Actions tab too
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Re-fetch pages and re-export chunks for the web demo
+        run: |
+          python data/ingest.py
+          python rag/export_chunks.py
+
+      - name: Open a PR if the corpus changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Refresh corpus from uwaterloo.ca"
+          title: "Weekly corpus refresh"
+          body: |
+            Automated re-run of `data/ingest.py` and `rag/export_chunks.py` against the current uwaterloo.ca pages.
+
+            Review the diff before merging - this updates `data/raw/` and `docs/data/chunks.json` with whatever changed on the live site since the last refresh. Nothing here touches `chroma_db/` (gitignored, local-only); run `python rag/build_index.py` locally after merging if you want the local CLI's index to match.
+          branch: auto/refresh-corpus
+          delete-branch: true
