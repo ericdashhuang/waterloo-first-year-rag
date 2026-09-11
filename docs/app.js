@@ -1,4 +1,5 @@
 import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+import { dot, buildSystemPrompt, formatAnswer, buildContext, buildHistoryText } from "./pure.js";
 
 // Let transformers.js fetch the model from the HF Hub CDN (default) and cache
 // it with the browser's Cache API, so repeat visits skip the download.
@@ -32,12 +33,6 @@ let turns = [];
 
 function setStatus(text) {
   statusText.textContent = text;
-}
-
-function dot(a, b) {
-  let s = 0;
-  for (let i = 0; i < a.length; i++) s += a[i] * b[i];
-  return s;
 }
 
 async function embed(text) {
@@ -107,42 +102,6 @@ async function init() {
     apiKeyInput.value = rememberedKey;
     rememberKeyInput.checked = true;
   }
-}
-
-function buildSystemPrompt() {
-  return "You are a helpful assistant answering questions about being a first-year student at the University of Waterloo, based only on the provided context from uwaterloo.ca. If the context doesn't contain the answer, say so plainly instead of guessing. Write in plain prose. Do not use any citation markup like [1] or 【source】 - instead name the source title(s) in a sentence at the end of your answer.";
-}
-
-function escapeHtml(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-// Strips stray tool-citation artifacts some models emit (e.g. 【source†L4-L9】)
-// and renders basic **bold** markdown, since the answer is plain text from the model.
-function formatAnswer(raw) {
-  const cleaned = raw
-    .replace(/【[^】]*】/g, "")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim();
-  const escaped = escapeHtml(cleaned).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-  const paragraphs = escaped.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`);
-  return paragraphs.join("");
-}
-
-function buildContext(turnChunks) {
-  return turnChunks
-    .map(({ chunk }, i) => `[${i + 1}] Source: ${chunk.source_title} (${chunk.source_url})\n${chunk.text}`)
-    .join("\n\n");
-}
-
-// Prior turns that got an answer, formatted as plain Q/A text so the LLM can
-// refer back to what it already told you this conversation.
-function buildHistoryText(uptoTurnIndex) {
-  return turns
-    .slice(0, uptoTurnIndex)
-    .filter((t) => t.answer)
-    .map((t) => `Q: ${t.question}\nA: ${t.answer}`)
-    .join("\n\n");
 }
 
 async function callAnthropic(apiKey, model, userContent) {
@@ -228,7 +187,7 @@ function wireGenerateButton(turnIndex, question, turnChunks, generateBtn, errorE
     generateBtn.disabled = true;
     generateBtn.textContent = "Generating...";
     try {
-      const history = buildHistoryText(turnIndex);
+      const history = buildHistoryText(turns, turnIndex);
       const context = buildContext(turnChunks);
       const userContent = `${history ? `Conversation so far:\n${history}\n\n` : ""}Context:\n\n${context}\n\nQuestion: ${question}`;
       const call = PROVIDER_CALLS[providerSelect.value];

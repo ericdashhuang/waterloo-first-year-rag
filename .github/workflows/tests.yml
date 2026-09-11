@@ -1,0 +1,30 @@
+name: Tests
+
+# Runs the unit tests automatically on every push and PR, so a regression in
+# chunking.py or the retrieval/formatting helpers in docs/pure.js shows up
+# as a failed check instead of going unnoticed until a real question hits it.
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest tests/ -v
+
+  js-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test docs/pure.test.js

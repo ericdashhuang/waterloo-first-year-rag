@@ -37,7 +37,9 @@ eval/
   generate_questions.py  LLM-generates one ground-truth question per source page
   run_eval.py             measures retrieval recall against those questions
 docs/                    static client-side demo, served by GitHub Pages (see below)
-.github/workflows/       weekly corpus-refresh automation (see below)
+  pure.js                 DOM-free retrieval/formatting helpers, unit tested directly
+tests/                   unit tests for rag/chunking.py
+.github/workflows/       weekly corpus-refresh + CI test runs (see below)
 ```
 
 ## Running it locally
@@ -89,6 +91,17 @@ python eval/run_eval.py
 
 uwaterloo.ca is a real site that changes — co-op requirements get updated, dates change year to year. `.github/workflows/refresh-corpus.yml` re-runs the ingest pipeline weekly and opens a PR if any of the 73 pages actually changed, so stale content gets caught automatically instead of silently going unnoticed. It never auto-merges — a human reviews the diff first, same as every other change to this repo.
 
+## Running the tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -v            # rag/chunking.py - paragraph boundaries, overlap, hard-splitting oversized paragraphs
+
+node --test docs/pure.test.js   # docs/pure.js - similarity ranking, answer formatting/XSS-safety, conversation history
+```
+
+Both suites run automatically on every push and PR via `.github/workflows/tests.yml`. They're plain unit tests (no network, no API key, no browser) - separate from `eval/`, which measures retrieval *accuracy* rather than code correctness.
+
 ## Design decisions worth knowing about
 
 - **Local embedding model, not an API.** Embeddings run through `onnxruntime` on CPU. This keeps the pipeline free to run and testable without any credentials, and it's genuinely fast enough at this corpus size (~400 chunks).
@@ -100,4 +113,4 @@ uwaterloo.ca is a real site that changes — co-op requirements get updated, dat
 
 - Add a re-ranking step after retrieval to improve answer quality on ambiguous questions.
 - Expand the corpus with more sections (academic advising, clubs, transit).
-- Add a test suite (unit tests for chunking, a browser smoke test for the live demo).
+- Add a browser smoke test (Playwright) that exercises the live demo end-to-end - the unit tests above cover the pure logic, not the actual UI.
