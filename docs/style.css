@@ -1,23 +1,29 @@
 :root {
-  --bg: #faf9f7;
+  /* University of Waterloo brand colours (Black & Gold) */
+  --gold: #fae100;
+  --gold-deep: #eaab00;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --border: #e2ddd4;
-  --text: #2b2620;
-  --text-dim: #6b6357;
-  --accent: #8a3b2f;
-  --accent-dim: #f0e3de;
+  --border: #dfdfdf;
+  --text: #000000;
+  --text-dim: #767676;
+  --accent: #000000;
+  --accent-dim: #f2eda8;
+  --on-gold: #000000;
+  --error: #cd1414;
   --mono: "SF Mono", ui-monospace, Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1b1815;
-    --surface: #242019;
-    --border: #3a342b;
-    --text: #eee8de;
-    --text-dim: #a89e8d;
-    --accent: #e8a488;
-    --accent-dim: #362520;
+    --bg: #0e0e0e;
+    --surface: #1a1a1a;
+    --border: #333333;
+    --text: #f5f5f0;
+    --text-dim: #a2a2a2;
+    --accent: #fae100;
+    --accent-dim: #3f3a13;
+    --error: #ff6b6b;
   }
 }
 
@@ -40,12 +46,19 @@ main {
 h1 {
   font-size: 1.5rem;
   margin: 0 0 0.25rem;
+  display: inline-block;
+  border-bottom: 4px solid var(--gold);
+  padding-bottom: 0.15rem;
 }
 
 .subtitle {
   color: var(--text-dim);
   font-size: 0.95rem;
   margin: 0 0 1.75rem;
+}
+
+a {
+  color: var(--accent);
 }
 
 .card {
@@ -68,7 +81,7 @@ h1 {
   width: 14px;
   height: 14px;
   border: 2px solid var(--border);
-  border-top-color: var(--accent);
+  border-top-color: var(--gold-deep);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
@@ -79,7 +92,7 @@ h1 {
 progress {
   width: 100%;
   height: 6px;
-  accent-color: var(--accent);
+  accent-color: var(--gold-deep);
   margin-top: 0.5rem;
 }
 
@@ -102,11 +115,16 @@ button {
   padding: 0.6rem 1rem;
   border: none;
   border-radius: 8px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--gold);
+  color: var(--on-gold);
+  font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
+}
+
+button:hover:not(:disabled) {
+  background: var(--gold-deep);
 }
 
 button:disabled {
@@ -118,6 +136,7 @@ button.secondary {
   background: transparent;
   color: var(--accent);
   border: 1px solid var(--accent);
+  font-weight: 400;
 }
 
 .chunk {
@@ -171,7 +190,7 @@ details summary {
 }
 
 .error {
-  color: var(--accent);
+  color: var(--error);
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
