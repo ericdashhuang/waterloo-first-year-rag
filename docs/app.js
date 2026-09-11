@@ -145,9 +145,18 @@ qform.addEventListener("submit", async (e) => {
   askBtn.textContent = "Ask";
 });
 
+const DEFAULT_MODELS = {
+  anthropic: "claude-sonnet-5",
+  groq: "llama-3.3-70b-versatile",
+};
+const MODEL_PLACEHOLDERS = {
+  openai: "e.g. gpt-4o-mini",
+  groq: "e.g. llama-3.3-70b-versatile",
+};
+
 providerSelect.addEventListener("change", () => {
-  modelInput.value = providerSelect.value === "anthropic" ? "claude-sonnet-5" : "";
-  modelInput.placeholder = providerSelect.value === "openai" ? "e.g. gpt-4o-mini" : "";
+  modelInput.value = DEFAULT_MODELS[providerSelect.value] || "";
+  modelInput.placeholder = MODEL_PLACEHOLDERS[providerSelect.value] || "";
 });
 
 function buildSystemPrompt() {
@@ -201,6 +210,32 @@ async function callOpenAI(apiKey, model, question) {
   return data.choices[0].message.content;
 }
 
+async function callGroq(apiKey, model, question) {
+  const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: buildSystemPrompt() },
+        { role: "user", content: `Context:\n\n${buildContext()}\n\nQuestion: ${question}` },
+      ],
+    }),
+  });
+  if (!resp.ok) throw new Error(`Groq API error ${resp.status}: ${await resp.text()}`);
+  const data = await resp.json();
+  return data.choices[0].message.content;
+}
+
+const PROVIDER_CALLS = {
+  anthropic: callAnthropic,
+  openai: callOpenAI,
+  groq: callGroq,
+};
+
 generateBtn.addEventListener("click", async () => {
   const apiKey = apiKeyInput.value.trim();
   const model = modelInput.value.trim();
@@ -223,9 +258,8 @@ generateBtn.addEventListener("click", async () => {
   generateBtn.disabled = true;
   generateBtn.textContent = "Generating...";
   try {
-    const answer = providerSelect.value === "anthropic"
-      ? await callAnthropic(apiKey, model, question)
-      : await callOpenAI(apiKey, model, question);
+    const call = PROVIDER_CALLS[providerSelect.value];
+    const answer = await call(apiKey, model, question);
     answerEl.textContent = answer;
   } catch (err) {
     genError.textContent = `${err.message} (if this looks like a CORS/network error, the provider may not allow direct browser calls -- try the other provider, or run rag/query.py locally instead).`;

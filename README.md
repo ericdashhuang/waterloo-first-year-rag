@@ -1,4 +1,4 @@
-# Waterloo First-Year RAG
+# GooseGuide
 
 A retrieval-augmented generation (RAG) system that answers questions about starting first year at the University of Waterloo, including co-op, housing, orientation, and campus wellness.
 Built as a learning project, so every step of the pipeline is written in plain Python rather than hidden behind a framework
@@ -57,7 +57,7 @@ Without a key, `query.py` still prints the retrieved chunks so you can inspect r
 
 ## Live demo
 
-**[ericdashhuang.github.io/waterloo-first-year-rag](https://ericdashhuang.github.io/waterloo-first-year-rag/)**
+**[ericdashhuang.github.io/gooseguide](https://ericdashhuang.github.io/gooseguide/)**
 
 A static, browser-only version of this lives on GitHub Pages: see `docs/`.
 It computes embeddings client-side (via [transformers.js](https://huggingface.co/docs/transformers.js)), so there's no backend server and no shared API key that a stranger could drain.

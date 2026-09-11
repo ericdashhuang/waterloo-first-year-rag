@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Waterloo First-Year RAG</title>
-  <meta name="description" content="Ask questions about first year at Waterloo (co-op, housing, orientation) - answered by a retrieval-augmented pipeline running entirely in your browser." />
+  <title>GooseGuide</title>
+  <meta name="description" content="GooseGuide - ask questions about first year at Waterloo (co-op, housing, orientation) - answered by a retrieval-augmented pipeline running entirely in your browser." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main>
-    <h1>Waterloo First-Year RAG</h1>
+    <h1>GooseGuide</h1>
     <p class="subtitle">
       Ask a question about first year at Waterloo (co-op, housing, orientation, wellness).
       Retrieval runs entirely in your browser against ~70 real uwaterloo.ca pages -
       no server, nothing sent anywhere until you optionally ask an LLM to generate an answer.
-      <a href="https://github.com/ericdashhuang/waterloo-first-year-rag" target="_blank" rel="noopener">Source + how it works &rarr;</a>
+      <a href="https://github.com/ericdashhuang/gooseguide" target="_blank" rel="noopener">Source + how it works &rarr;</a>
     </p>
 
     <div class="card">
@@ -48,6 +48,7 @@
           <select id="provider">
             <option value="anthropic">Anthropic (Claude)</option>
             <option value="openai">OpenAI</option>
+            <option value="groq">Groq (free tier)</option>
           </select>
         </div>
         <div class="field">
@@ -57,6 +58,7 @@
         <div class="field">
           <label for="apiKey">API key</label>
           <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+          <p class="hint" id="providerHint">Don't have a paid key? <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> gives you a free one in about a minute - pick "Groq" above.</p>
         </div>
         <div class="field">
           <label><input type="checkbox" id="rememberKey" /> Remember key in this browser only (localStorage)</label>
@@ -70,7 +72,7 @@
     <footer>
       Built as a resume/learning project - raw Python RAG pipeline + browser-native retrieval demo.
       <br />
-      <a href="https://github.com/ericdashhuang/waterloo-first-year-rag" target="_blank" rel="noopener">github.com/ericdashhuang/waterloo-first-year-rag</a>
+      <a href="https://github.com/ericdashhuang/gooseguide" target="_blank" rel="noopener">github.com/ericdashhuang/gooseguide</a>
     </footer>
   </main>
 

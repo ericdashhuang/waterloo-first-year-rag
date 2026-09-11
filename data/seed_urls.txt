@@ -1,4 +1,4 @@
-# Corpus source list for the Waterloo First-Year RAG project.
+# Corpus source list for the GooseGuide project.
 # One public uwaterloo.ca URL per line. Lines starting with # are comments.
 # Regenerate candidates with `python data/discover_urls.py`, then curate by hand.
 
