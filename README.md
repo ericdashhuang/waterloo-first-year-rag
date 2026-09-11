@@ -10,7 +10,7 @@ This project fixes that by retrieving real content from uwaterloo.ca before gene
 
 ## How it works
 
-1. **Ingest** (`data/ingest.py`) — fetches ~70 public uwaterloo.ca pages (co-op, housing, orientation, international students, campus wellness, registrar) and strips them down to clean article text.
+1. **Ingest** (`data/ingest.py`) — fetches 73 public uwaterloo.ca pages (co-op, housing, orientation, international students, campus wellness, registrar) and strips them down to clean article text.
 2. **Chunk** (`rag/chunking.py`) — splits each page into ~900-character overlapping chunks along paragraph boundaries, so a chunk rarely cuts a sentence in half.
 3. **Embed + index** (`rag/build_index.py`) — converts every chunk into a vector using a local embedding model (`all-MiniLM-L6-v2`, bundled with Chroma, runs on CPU, no API key needed) and stores it in a persistent [Chroma](https://www.trychroma.com/) vector database.
 4. **Retrieve + generate** (`rag/query.py`) — embeds the question the same way, finds the most similar chunks by vector search, and passes them to an LLM as context so it can answer from real source material and cite where the answer came from.
@@ -62,7 +62,7 @@ Without a key, `query.py` still prints the retrieved chunks so you can inspect r
 A static, browser-only version of this lives on GitHub Pages: see `docs/`.
 It computes embeddings client-side (via [transformers.js](https://huggingface.co/docs/transformers.js)), so there's no backend server and no shared API key that a stranger could drain.
 Retrieval works immediately with no setup.
-To also get a generated written answer (not just the retrieved chunks), you paste your own Anthropic or OpenAI API key into the page — it's used directly from your browser to call the provider and is never sent anywhere else or stored, unless you explicitly opt in to remembering it in that browser's local storage.
+To also get a generated written answer (not just the retrieved chunks), you paste your own Anthropic or Groq API key into the page — Groq has a free tier — and it's used directly from your browser to call the provider, never sent anywhere else or stored, unless you explicitly opt in to remembering it in that browser's local storage.
 
 ## Design decisions worth knowing about
 
