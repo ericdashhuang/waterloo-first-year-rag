@@ -149,18 +149,35 @@ const DEFAULT_MODELS = {
   anthropic: "claude-sonnet-5",
   groq: "openai/gpt-oss-120b",
 };
-const MODEL_PLACEHOLDERS = {
-  openai: "e.g. gpt-4o-mini",
-  groq: "e.g. openai/gpt-oss-120b",
-};
 
-providerSelect.addEventListener("change", () => {
+function syncModelField() {
   modelInput.value = DEFAULT_MODELS[providerSelect.value] || "";
-  modelInput.placeholder = MODEL_PLACEHOLDERS[providerSelect.value] || "";
-});
+}
+
+providerSelect.addEventListener("change", syncModelField);
+// Some browsers restore a <select>'s value on reload/back-forward without
+// firing "change", which would leave the model field out of sync - so also
+// sync once up front against whatever the provider field actually shows.
+syncModelField();
 
 function buildSystemPrompt() {
-  return "You are a helpful assistant answering questions about being a first-year student at the University of Waterloo, based only on the provided context from uwaterloo.ca. If the context doesn't contain the answer, say so plainly instead of guessing. Cite the source title(s) you used at the end of your answer.";
+  return "You are a helpful assistant answering questions about being a first-year student at the University of Waterloo, based only on the provided context from uwaterloo.ca. If the context doesn't contain the answer, say so plainly instead of guessing. Write in plain prose. Do not use any citation markup like [1] or 【source】 - instead name the source title(s) in a sentence at the end of your answer.";
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Strips stray tool-citation artifacts some models emit (e.g. 【source†L4-L9】)
+// and renders basic **bold** markdown, since the answer is plain text from the model.
+function formatAnswer(raw) {
+  const cleaned = raw
+    .replace(/【[^】]*】/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+  const escaped = escapeHtml(cleaned).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  const paragraphs = escaped.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`);
+  return paragraphs.join("");
 }
 
 function buildContext() {
@@ -190,26 +207,6 @@ async function callAnthropic(apiKey, model, question) {
   return data.content[0].text;
 }
 
-async function callOpenAI(apiKey, model, question) {
-  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: "system", content: buildSystemPrompt() },
-        { role: "user", content: `Context:\n\n${buildContext()}\n\nQuestion: ${question}` },
-      ],
-    }),
-  });
-  if (!resp.ok) throw new Error(`OpenAI API error ${resp.status}: ${await resp.text()}`);
-  const data = await resp.json();
-  return data.choices[0].message.content;
-}
-
 async function callGroq(apiKey, model, question) {
   const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -232,7 +229,6 @@ async function callGroq(apiKey, model, question) {
 
 const PROVIDER_CALLS = {
   anthropic: callAnthropic,
-  openai: callOpenAI,
   groq: callGroq,
 };
 
@@ -260,7 +256,7 @@ generateBtn.addEventListener("click", async () => {
   try {
     const call = PROVIDER_CALLS[providerSelect.value];
     const answer = await call(apiKey, model, question);
-    answerEl.textContent = answer;
+    answerEl.innerHTML = formatAnswer(answer);
   } catch (err) {
     genError.textContent = `${err.message} (if this looks like a CORS/network error, the provider may not allow direct browser calls -- try the other provider, or run rag/query.py locally instead).`;
     genError.hidden = false;

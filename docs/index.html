@@ -45,10 +45,6 @@
       </form>
     </div>
 
-    <div class="card" id="resultsCard" hidden>
-      <div id="chunks"></div>
-    </div>
-
     <div class="card" id="genCard" hidden>
       <details id="genDetails">
         <summary>Generate a written answer (uses your own API key)</summary>
@@ -60,7 +56,6 @@
           <label for="provider">Provider</label>
           <select id="provider">
             <option value="anthropic">Anthropic (Claude)</option>
-            <option value="openai">OpenAI</option>
             <option value="groq">Groq (free tier)</option>
           </select>
         </div>
@@ -80,6 +75,10 @@
         <div id="genError" class="error" hidden></div>
         <div id="answer" class="answer"></div>
       </details>
+    </div>
+
+    <div class="card" id="resultsCard" hidden>
+      <div id="chunks"></div>
     </div>
 
     <footer>
