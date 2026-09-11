@@ -4,9 +4,10 @@
   --gold-bright: #e0b23f;
   --bg: #0c0c0c;
   --surface: #161616;
-  --border: #2c2c2c;
+  --border: rgba(255, 255, 255, 0.16);
   --text: #ffffff;
-  --text-dim: #a8a8a8;
+  --text-dim: #b8b8b8;
+  --link: #ffffff;
   --accent: #e0b23f;
   --accent-dim: #2a2313;
   --on-gold: #0c0c0c;
@@ -66,7 +67,12 @@ h1 {
 }
 
 a {
-  color: var(--accent);
+  color: var(--link);
+  text-decoration-color: var(--border);
+}
+
+a:hover {
+  text-decoration-color: var(--gold);
 }
 
 .card {
@@ -147,8 +153,8 @@ button:disabled {
 
 button.secondary {
   background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  color: var(--text);
+  border: 1px solid var(--text);
   font-weight: 400;
 }
 
@@ -162,9 +168,14 @@ button.secondary {
 
 .chunk-source {
   font-size: 0.78rem;
-  color: var(--accent);
+  color: var(--text);
   text-decoration: none;
   font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.chunk-source:hover {
+  border-bottom-color: var(--gold);
 }
 
 .chunk-text {
