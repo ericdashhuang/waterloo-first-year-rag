@@ -1,30 +1,17 @@
 :root {
-  /* University of Waterloo brand colours (Black & Gold) */
-  --gold: #fae100;
-  --gold-deep: #eaab00;
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --border: #dfdfdf;
-  --text: #000000;
-  --text-dim: #767676;
-  --accent: #000000;
-  --accent-dim: #f2eda8;
-  --on-gold: #000000;
-  --error: #cd1414;
+  /* University of Waterloo brand colours (Black & Gold), muted gold + white worked in */
+  --gold: #c99a2e;
+  --gold-bright: #e0b23f;
+  --bg: #0c0c0c;
+  --surface: #161616;
+  --border: #2c2c2c;
+  --text: #ffffff;
+  --text-dim: #a8a8a8;
+  --accent: #e0b23f;
+  --accent-dim: #2a2313;
+  --on-gold: #0c0c0c;
+  --error: #ff6b6b;
   --mono: "SF Mono", ui-monospace, Menlo, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e0e0e;
-    --surface: #1a1a1a;
-    --border: #333333;
-    --text: #f5f5f0;
-    --text-dim: #a2a2a2;
-    --accent: #fae100;
-    --accent-dim: #3f3a13;
-    --error: #ff6b6b;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -43,9 +30,30 @@ main {
   padding: 2.5rem 1.25rem 5rem;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.goose {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.goose-shadow { fill: #ffffff; opacity: 0.08; }
+.goose-body, .goose-head { fill: #ffffff; }
+.goose-neck { fill: none; stroke: #ffffff; stroke-width: 11; stroke-linecap: round; }
+.goose-wing { fill: #0c0c0c; opacity: 0.14; }
+.goose-leg { stroke: var(--gold); stroke-width: 3; stroke-linecap: round; }
+.goose-beak { fill: var(--gold); }
+.goose-eye { fill: #0c0c0c; }
+
 h1 {
   font-size: 1.5rem;
-  margin: 0 0 0.25rem;
+  margin: 0;
   display: inline-block;
   border-bottom: 4px solid var(--gold);
   padding-bottom: 0.15rem;
@@ -81,7 +89,7 @@ a {
   width: 14px;
   height: 14px;
   border: 2px solid var(--border);
-  border-top-color: var(--gold-deep);
+  border-top-color: var(--gold-bright);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
@@ -92,7 +100,7 @@ a {
 progress {
   width: 100%;
   height: 6px;
-  accent-color: var(--gold-deep);
+  accent-color: var(--gold-bright);
   margin-top: 0.5rem;
 }
 
@@ -106,9 +114,14 @@ input[type="text"], input[type="password"], select {
   padding: 0.6rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
   font-size: 0.95rem;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, select:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
 }
 
 button {
@@ -124,7 +137,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: var(--gold-deep);
+  background: var(--gold-bright);
 }
 
 button:disabled {
