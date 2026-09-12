@@ -1,7 +1,7 @@
 # GooseGuide
 
 A retrieval-augmented generation (RAG) system that answers questions about starting first year at the University of Waterloo, including co-op, housing, orientation, and campus wellness.
-Built as a learning project, so every step of the pipeline is written in plain Python rather than hidden behind a framework
+
 
 ## Why this exists
 
