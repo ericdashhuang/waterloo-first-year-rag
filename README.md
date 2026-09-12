@@ -87,6 +87,11 @@ python eval/run_eval.py
 
 `run_eval.py` reports recall@5 (did the correct source page show up in the top 5 retrieved chunks) and lists which questions missed, so a regression in `rag/chunking.py` or a change to `TOP_K` shows up as a number going down instead of going unnoticed.
 
+`run_eval.py`'s 73 generated questions are all single-turn, so they don't cover the follow-up-question fix described above (prepending the prior question before embedding a follow-up).
+`eval/multiturn_context_check.py` is a separate, hand-picked measurement of that specific fix: it embeds a representative follow-up ("What about abroad?" after "How many co-op work terms do I need to complete?") both alone and with the prior question prepended, then shows where the actually-correct page ("Work abroad co-op requirements") lands in the top 5 either way.
+Run it the same way as `run_eval.py`, after building the index.
+This is a single illustrative example, not a statistical benchmark - see the script's own docstring for the exact methodology.
+
 ## Keeping the corpus fresh
 
 uwaterloo.ca is a real site that changes — co-op requirements get updated, dates change year to year. `.github/workflows/refresh-corpus.yml` re-runs the ingest pipeline weekly and opens a PR if any of the 73 pages actually changed, so stale content gets caught automatically instead of silently going unnoticed. It never auto-merges — a human reviews the diff first, same as every other change to this repo.
